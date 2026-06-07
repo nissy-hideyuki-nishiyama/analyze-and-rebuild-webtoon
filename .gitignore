@@ -1,0 +1,24 @@
+# pip
+.venv
+.venv/*
+resources/utils/__pycache__
+resources/utils/__pycache__/*
+
+# archive
+resources/utils/archive/*
+
+# config
+resources/utils/categorys/*
+resources/utils/classify/*
+resources/utils/config/classify/*.
+resources/utils/config/concate/concate_images_*.yaml
+resources/utils/config/replace/replace_targets_*.yaml
+
+# output prompts_list
+resources/utils/converted_prompts/converted_prompts_*.txt
+
+# output keywords
+resources/utils/keywords/*.yaml
+
+# output 
+resources/utils/output/*

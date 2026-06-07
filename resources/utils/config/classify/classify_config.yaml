@@ -1,0 +1,6 @@
+# mode_name: "webtoon_keyword_classify"
+mode_name: "all-MiniLM-L6-v2"
+
+categories_dict_path: "./config/classify/categories.yaml"
+input_keyword_path: "./keywords/Read_I_Became_a_Pornhwa_NPC_strings_count_all_001.yaml"
+output_path: "./classify/classified_keywords_Read_I_Became_a_Pornhwa_NPC_002.json"

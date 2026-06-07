@@ -1,0 +1,393 @@
+input_directory: /mnt/comfy_data/output/webtoon/outsiders/prompts
+output_directory: /mnt/comfy_data/output/webtoon/outsiders/converted_prompts_kaoru
+output_file: /mnt/comfy_data/output/webtoon/outsiders/Amagami/converted_prompts_kaoru.txt
+scan_subdir: true  # サブディレクトリも対象にする場合 true
+# replace strings
+replaced_string:
+  - 1boy: "1boy, Tachibana Junichi, Amagami"
+  - 2boys: "2boy, Tachibana Junichi, faceless_male, Amagami"
+  - 1girl: "1girl, Tanamachi Kaoru, Amagami"
+  - 2girls: "2girls, Tanamachi Kaoru, Tsukahara Hibiki, Amagami"
+  - 3girls: "3girls, Tanamachi Kaoru, Tsukahara Hibiki, Sakurai Rihoko, Amagami"
+  - 4girls: "4girls, Tanamachi Kaoru, Tsukahara Hibiki, Sakurai Rihoko, Tanaka Keiko, Amagami"
+  # outfit
+  - dress: school_uniform
+  - black_dress: school_uniform
+  - blle_dress: school_uniform
+  - red_dress: school_uniform
+  - short_dress: school_uniform
+  - jacket: school_uniform
+  - black_jacket: school_uniform
+  - blue_jacket: school_uniform
+  - brown_jacket: school_uniform
+  - green_jacket: school_uniform
+  - red_jacket: school_uniform
+  - black_jacket: school_uniform
+  - blue_jacket: school_uniform
+  - brown_jacket: school_uniform
+  - red_jacket: school_uniform
+  - green_jacket: school_uniform
+  - hoodie: school_uniform
+  - black_hoodie: school_uniform
+  - brown_hoodie: school_uniform
+  - grey_hoodie: school_uniform
+  - pink_hoodie: school_uniform
+  - purple_hoodie: school_uniform
+  - red_hoodie: school_uniform
+  - white_hoodie: school_uniform
+  - pants: school_uniform_skirt
+  - blue_pants: school_uniform_skirt
+  - jeans: school_uniform_shirt
+  - denim: school_uniform_shirt
+  - shirt: school_uniform_shirt
+  - black_shirt: school_uniform_shirt
+  - blue_shirt: school_uniform_shirt
+  - grey_shirt: school_uniform_shirt
+  - orange_shirt: school_uniform_shirt
+  - red_shirt: school_uniform_shirt
+  - yellow_shirt: school_uniform_shirt
+  - miniskirt: school_uniform_skirt
+  - black_skirt: school_uniform_skirt
+  - pencil_skirt: school_uniform_skirt
+  - white_skirt: school_uniform_skirt
+  - sweater: school_uniform
+  - black_sweater: school_uniform
+  - brown_sweater: school_uniform
+  - pink_sweater: school_uniform
+  - red_sweater: school_uniform
+  - short_shorts: white_panties
+  - sweat: perspiration
+# deleted strings
+deleted_string:
+  # outfits
+  # - sweat
+  - one-piece_swimsuit
+  # kouka
+  - aura
+  - cardboard_box
+  - dialogue_box
+  - heart
+  - mercy_\(overwatch\)
+  - mona_\(genshin_impact\)
+  - musical_note
+  - sound_effects
+  - speech_bubble
+  - spoken_ellipsis
+  - spoken_exclamation_mark
+  - spoken_heart
+  - spoken_question_mark
+  - spoken_squiggle
+  - suggestive_fluid
+  - thought_bubble
+  - watermark
+  - bar_censor
+  - blank_censor
+  - censored
+  - convenient_censoring
+  - heart_censor
+  - mosaic_censoring
+  - out-of-frame_censoring
+  - profanity
+  - public_indecency
+  - chinese_text
+  - english_text
+  - keyboard_\(computer\)
+  - korean_text
+  - age_difference
+  - patreon_username
+  - twitter_username
+  # character style
+  - aqua_eyes
+  - black_eyes
+  - black_hair
+  - blonde_hair
+  - blue_eyes
+  - blue_hair
+  - blue_ribbon
+  - brown_eyes
+  - brown_hair
+  - brown_ribbon
+  - choker
+  - black_choker
+  - hood_down
+  - cropped_hoodie
+  - dark-skinned_female
+  - dark-skinned_male
+  - dark_skin
+  - glasses
+  - green_eyes
+  - grey_eyes
+  - grey_hair
+  - hair_between_eyes
+  - hair_bow
+  - hair_over_eyes
+  - hair_over_one_eye
+  - hair_ribbon
+  - long_hair
+  - male_pubic_hair
+  - medium_hair
+  - messy_hair
+  - mole
+  - mole_under_eye
+  - mole_under_mouth
+  - mole_on_breast
+  - multicolored_hair
+  - orange_hair
+  - orange_scarf
+  - pink_hair
+  - pink_nails
+  - ponytail
+  - hair_bun
+  - pubic_hair
+  - red_bow
+  - red_eyes
+  - red_hair
+  - red_ribbon
+  - short_hair
+  - single_hair_bun
+  - split-color_hair
+  - striped_bow
+  - tail
+  - thick_eyebrows
+  - twintails
+  - two-tone_hair
+  - white_bow
+  - white_ribbon
+  - yellow_scarf
+  - huge_breasts
+  - large_breasts
+  - midule_breasts
+  - small_breasts
+  - hood
+  # character_features
+  - short_hair
+  - long_hair
+  - grey_hair
+  - brown_hair
+  - black_hair
+  - white_hair
+  - blonde_hair
+  - hair_between_eyes
+  - brown_eyes
+  - green_eyes
+  - purple_eyes
+  - pink_eyes
+  - hair_ornament
+  - yellow_eyes
+  - hair_bun
+  - hair_intakes
+  - single_hair_bun
+  - nose_blush
+  - black_choker
+  - braid
+  - stomach_tattoo
+  # - twintails
+  - green_sweater
+  - dark_skin
+  - hair_bow
+  - dark-skinned_female
+  # - animal_ears
+  # - cat_ears
+  # - pointy_ears
+  # - extra_ears
+  # - fake_animal_ears
+  - medium_hair
+  - pink_hair
+  - hair_stick
+  - bob_cut
+  - bowl_cut
+  - _cut
+  - swept_bangs
+  - red_eyes
+  - red_horns
+  - twin_braids
+  - demon_horns
+  - hair_flower
+  - eyes_visible_through_hair
+  - black_thighhighs
+  - mole_under_eye
+  - red_bow
+  - ponytail
+  - head_wings
+  - blue_hair
+  - blue_eyes
+  - butterfly_hair_ornament
+  - light_brown_hair
+  - demon_wings
+  - rolling_eyes
+  - parted_bangs
+  - eye_contact
+  - lace_trim
+  - round_eyewear
+  - eyewear_on_head
+  - cat_girl
+  - hair_ribbon
+  - pink_border
+  - v-shaped_eyebrows
+  - aqua_eyes
+  - neck_ribbon
+  - purple_hair
+  - single_braid
+  - animal_print
+  - black_eyes
+  - braided_ponytail
+  - butterfly
+  - black_bow
+  - straw_hat
+  - black_bowtie
+  - ear_blush
+  - sun_hat
+  - grey_eyes
+  - hair_over_shoulder
+  - red_flower
+  - wet_hair
+  - white_bow
+  - wing_hair_ornament
+  - hair_over_eyes
+  - multicolored_hair
+  - no_eyes
+  - pubic_hair
+  - double_bun
+  - tinted_eyewear
+  - anger_vein
+  - white_flower
+  - goggles_on_head
+  - black_border
+  - covered_eyes
+  - hair_behind_ear
+  - orange_eyes
+  - red_wings
+  - side_ponytail
+  - grabbing_another's_hair
+  - white_ribbon
+  - yellow-tinted_eyewear
+  - green_ribbon
+  - pink_flower
+  - red_hair
+  - red_hairband
+  - tail
+  - demon_tail
+  - dragon_horns
+  - feathers
+  - glowing_eyes
+  - low_twintails
+  - shiny_skin
+  - white_wings
+  - butterfly_print
+  - cherry_blossoms
+  - glowing_tattoo
+  - bald
+  - blunt_bangs
+  - covering_own_eyes
+  - female_pubic_hair
+  - hair_over_one_eye
+  - hairpin
+  - heart_tattoo
+  - pencil_dress
+  - puff_of_air
+  - skin_fang
+  - adjusting_hair
+  - fishnet_thighhighs
+  - hair_scrunchie
+  - star_\(sky\)
+  - brown_border
+  - green_hair
+  - head_only
+  - heart_in_eye
+  - scratching_head
+  - short_hair_with_long_locks
+  - ass_ripple
+  - butterfly_wings
+  - drill_hair
+  - eyebrows_hidden_by_hair
+  - hair_tucking
+  - pink_rose
+  - short_twintails
+  - shower_head
+  - yellow-framed_eyewear
+  - bandaged_head
+  - dragon_wings
+  - hairclip
+  - low_twin_braids
+  - purple_bikini
+  - angel_wings
+  - eye_reflection
+  - feathered_wings
+  - hand_in_own_hair
+  - low_ponytail
+  - purple_scrunchie
+  - raised_eyebrows
+  - unworn_hat
+  - barbara_\(genshin_impact\)
+  - crossed_bangs
+  - fishnet_socks
+  - gradient_hair
+  - high_ponytail
+  - lily_\(flower\)
+  - photo_\(object\)
+  - red_tail
+  - sparkle_background
+  - starry_sky
+  - tanlines
+  - plaid
+  - toned
+  - cuffs
+  # breast_size
+  - huge_breasts
+  - large_breasts
+  - medium_breasts
+  - alternate_breast_size
+  # male
+  - muscular
+  - muscular_male
+  - yaoi
+  - pectorals
+  - abs
+  - breasts_apart
+  # rating:
+  - censored
+  - blank_censor
+  - out-of-frame_censoring
+  - mosaic_censoring
+  - profanity
+  - bar_censor
+  - uncensored
+  - covering_privates
+  - convenient_censoring
+  - public_indecency
+  - light_censor
+  - heart_censor
+  # text:
+  - twitter_username
+  - implied_yaoi
+  - engrish_text
+  - text_focus
+  - uesugi_fuutarou
+  - chibi_inset
+  - zettai_ryouiki
+  - text_messaging
+  - spoken_exclamation_mark
+  - chinese_text
+  - mixed-language_text
+  - romaji_text
+  - twitter_logo
+  - artist_name
+  - web_address
+  - '...'
+  - '!!'
+  # etc others
+  - emiya_shirou
+  - kotomine_kirei
+  - sendai_hakurei_no_miko
+  - watson_amelia
+  - roman_numeral
+  - natsuiro_matsuri
+  - otoko_no_ko
+  - kuroki_tomoko
+  - suzuhara_lulu
+  # misc
+  - uesugi_fuutarou
+  - goggles
+  - jirai_kei
+  - uesugi_fuutarou
+  - oozora_subaru

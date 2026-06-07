@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+# テスト実行用設定ファイル
+# 使用方法: python3 keywords_to_yaml.py --config config/keywords_to_yaml_config.yaml
+
+input_filepath: ./classify/classified_keywords_Read_I_Became_a_Pornhwa_NPC_002.json
+output_filepath: ./output/keywords_output_filtered.yaml
+minimum_count_to_output: 5
+sort_by: count_desc
+output_categories_list:
+  - expression
+  - effect
+  - action
+# output_categories_list:
+#   - expression
+#   - effect
+#   - action

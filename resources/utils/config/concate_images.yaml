@@ -1,0 +1,13 @@
+# input_directory: /mnt/comfy_data/input/webtoon_resources/outsiders/ch089
+# output_directory: /mnt/comfy_data/input/webtoon_resources/outsiders/concated/ch089
+input_directory: /mnt/comfy_data/input/webtoon_resources/switchon2
+output_directory: /mnt/comfy_data/output/webtoon/switchon2
+scan_subdir: true  # サブディレクトリも対象にする場合 true
+separate_height: 5
+pattern_separate_height: 5  # パターン行の連続数閾値
+tolerance: 12  # 0 - 255 色差の許容度
+# row_diff_avg_tolerance: 10  # 行間差分の平均値のしきい値
+not_save_less_than_height: 30   # この高さ以下のファイルは保存しない
+extensions:
+  - jpg
+  - png
