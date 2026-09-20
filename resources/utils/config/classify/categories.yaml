@@ -1,33 +1,47 @@
 expression:   # 表情
   - smile
+  - sparkle
+  - glowing
   - angry
   - sad
   - blush
   - crying
   - ahegao
+  - torogao
   - blush
   - bright_pupils
   - closed_eyes
+  - one_eye_closed
+  - blank_eye
+  - heart-shaped_pupils
+  - half-closed_eyes
+  - rolling_eyes
+  - averting_eyes
   - closed_month
+  - open_mouth
+  - wavy_mouth
   - drooling
   - grin
-  - one_eye_closed
   - saliva
   - sweat
   - sweatdrop
   - symbol-shaped_pupils
   - tongue_out
-  - wavy_mouth
   - confused
-  - closed_eyes
-  - blank_eye
   - '@_@'
   - sanpaku
+  - clenched_teeth
+  - surprised
+  - furrowed_brow
+  - frown
+  - nervous
+  - saliva_trail
   - +_+
   - '>_<'
   - '>o<'
   - ^_^
-character:    # キャラクター, 人物
+  - _blush
+character:    # キャラクタ, 人物
   - 1girl
   - 2girls
   - 3girls
@@ -58,7 +72,8 @@ character:    # キャラクター, 人物
   - ffm_threesome
   - fmm_threesome
   - _threesome
-character_features:  # キャラクタ変換時に置換または削除候補となる
+  - futa_with_female
+character_features:  # キャラクタの付帯的な特徴。キャラクタ変換時に置換または削除候補となる
   - ahoge
   - heart_ahoge
   - hair
@@ -108,6 +123,7 @@ character_features:  # キャラクタ変換時に置換または削除候補と
   - dark_skin
   - _writing
   - body_writing
+  - futanari
   # male body attributes
   - muscular
   - muscular_male
@@ -116,7 +132,8 @@ character_features:  # キャラクタ変換時に置換または削除候補と
   - breasts_apart
   - bara
   - bowl_cut
-body_attributes:
+  - mole_under_eye
+body_attributes:  # キャラクタの身体的特徴
   - anus
   - anus_
   - anus_peek
@@ -157,13 +174,13 @@ body_attributes:
   - toenails
   - covered_navel
   - v-shaped_eyebrows
-bust_size:  # キャラクタ変換時に置換または削除候補となる
+bust_size:  # バストサイズ。キャラクタ変換時に置換または削除候補となる
   - large_breasts
   - medium_breasts
   - small_breasts
   - huge_breasts
   - alternate_breast_size
-accessary:
+accessary:  # キャラクタが身に着けているアクセサリーや背景の小道具など
   - earrings
   - necklace
   - choker
@@ -194,7 +211,9 @@ accessary:
   - clock
   - sunglasses
   - hat
-outfit:  # キャラクタ変換時に置換または削除候補となる
+  - can
+  - _can
+outfit:  # 服装およ着衣の状態。キャラクタ変換時に置換または削除候補となる
   - dress
   - jacket
   - uniform
@@ -303,7 +322,9 @@ outfit:  # キャラクタ変換時に置換または削除候補となる
   - animal_print, 
   - butterfly_print
   - _print 
-underwear:  # キャラクタ変換時に置換または削除候補となる
+  - _necktie
+  - _bowtie
+underwear:  # 下着。キャラクタ変換時に置換または削除候補となる
   - underwear
   - panties
   - grey_panties
@@ -326,7 +347,7 @@ underwear:  # キャラクタ変換時に置換または削除候補となる
   - fishnet_pantyhose
   - _pantyhose
   - fishnets
-action:
+action:   # 行動、動作
   - adjusting_
   - run
   - jump
@@ -343,6 +364,8 @@ action:
   - press
   - sucking
   - sex
+  - clothed_sex
+  - _sex
   - fellatio
   - cum
   - cumdrip
@@ -401,7 +424,8 @@ action:
   - looking_at_phone
   - showering
   - pulling_another's_clothes
-posing:
+  - paizuri
+posing:   # 姿勢、態勢、ポーズ
   - all_fours
   - arm
   - arm_
@@ -449,13 +473,14 @@ posing:
   - covered_face
   - dogeza
   - seiza
+  - wariza
   - spread_legs
   - erection
-position:
+position:   # キャラクタの位置関係
   - position
   - cowgirl
   - _on_top
-location:
+location:   # 場所、背景
   - room
   - street
   - school
@@ -470,11 +495,11 @@ location:
   - bathroom
   - counter
   - toilet
-time:
+time:   # 時間帯、背景の時間帯、光具合
   - night
   - morning
   - sunset
-camera_angle:
+camera_angle:   # カメラアングル、視点
   - low angle
   - high angle
   - close up
@@ -507,7 +532,7 @@ camera_angle:
   - _view
   - telephoto
   - eye_level
-text:
+text:   # テキスト。最終プロンプト生成時の削除候補
   - text
   - chinese_text
   - french_text
@@ -525,7 +550,7 @@ text:
   - twitter_username
   - artist_name
   - spoken_exclamation_mark
-effect:
+effect:    # 効果、アクション線
   - sound_effects
   - speech_bubble
   - motion_
@@ -544,9 +569,11 @@ effect:
   - 3koma
   - 4koma
   - comic
+  - _commic
   - emphasis_lines
   - blurry
   - blurry_background
+  - broken
 art_style:  # 画像の雰囲気を変更するときに差し替える
   - anime_style
   - sketch
@@ -565,7 +592,7 @@ art_style:  # 画像の雰囲気を変更するときに差し替える
   - halftone_background
   - red_background
   - yellow_background
-rating:
+rating:   # レーティングキーワード。最終プロンプト生成時の削除候補となる
   - censored
   - uncensored
   - bar_censor
@@ -576,7 +603,7 @@ rating:
   - convenient_censoring
   - mosaic_censoring
   - watermark
-misc:
+misc:   # その他
   - unknown
   - virtual_youtuber
   - goggles
@@ -606,5 +633,6 @@ misc:
   - watson_amelia
   - yaoyorozu_momo
   - yorha_no._2_type_b
+  - adam's_apple
   # misc
   

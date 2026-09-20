@@ -1,0 +1,369 @@
+これは、resources/utils/batch_caption_natural_lang_qw35_vl_4b_00.py でつかわれる SYSTEM_PROMPTSとDEFAULT_PROMPT を定義した設定ファイルです。
+
+現在のSYSTEM_PROMPTSとDEFAULT_PROMPTを修正して、次のように画像分析した結果をテキスト出力するように変更してください。
+モデルが認識しやすいように、英語で出力する
+
+- SYSTEM_PROMPT と DEFAULT_PROMPT に分割して出力する
+- SYSTEM_PROMPT では出力しない禁止事項を記述する。下記は出力しない
+  - マンガの吹き出し
+- DEFAULT_PROMPT の出力は下記の仕様に従う
+  - danbooru タグ と 自然言語文 の順番で出力する
+  - danbooru タグの出力は下記に従う
+    - danbooru タグは、次の順番で出力する。キャラクタ一人について、1行でカンマ区切りで出力する。二人目以降は改行して出力する
+    　 - [1girl/1boy/1other/solo etc]
+       - [character physical features: hair color, hair style, body features]
+       - [facial expression: smile, cry, angry, supprize]
+       - [clothing, outfits, nude: full nude, upper nude, barefoot, school uniform, jackets, shirt, suit, sweater, pants, skirt, hoody etc]
+       - [pose:  perspiration, nude, barefoot, pussy, cum, from_behind, feet, completely_nude, toes, anus, pussy_juice, cum_in_pussy, soles, all_fours etc]
+       - [action: implied_yuri, implied_sex, anus, pussy_juice, cum_in_pussy, soles, all_fours, after_sex, cumdrip, plump, top-down_bottom-up, hanging_breasts, after_vaginal, cum_in_ass, after_anal, dogeza etc]
+    - danbooru タグは、キャラクターの性別と人数、服装、ポーズ、強調されている身体部分、動作・アクションのみ出力してください。
+    - キャラクターの配置は左上から右下に向かって順番に記述する。画面で重なる場合は手前から奥の順番で記述する
+  - 自然言語文の出力は下記の要素を含むように出力して下さい
+    - 構成、カメラアングル、視聴者視点、画面の雰囲気
+    - キャラクターの表情、ポーズ、視線
+    - キャラクターの動作とアクション
+    - 光源の位置と照明の方向、キャラクターの影や背景の陰影
+    - 背景と場所
+
+---
+
+アニメ、マンガの画像生成において、ソース画像となるが画像ファイルにdanboo形式のタグ付けを行うライブラリとして、wd14taggerが有名です。
+wd14taggerは1枚の画像について、タグを出力しますが、マンガのようなストーリー性のある複数枚からなる画像ファイルの場合、男性はキャラクターA、
+長髪の女性はキャラクターB、セミロングの女性はキャラクターCと区別する必要があります。
+これをwd14taggerが出力したタグに対して、区分けする方法はありませんか？
+
+WD14 Tagger（wd-v1-4-convnext-tagger など）は「1枚の画像を独立して解析し、一般的な概念タグ（例: `1girl`, `long hair`, `smile`）を出力する」モデルであるため、複数枚（コマやページ）をまたいだ「コンテキスト（文脈）の理解」や「固有のキャラクター（キャラクターA, B, C）の識別」は単体では行えません。
+
+ストーリー性のある複数枚の画像群に対してキャラクターを整合性を保って識別・タグ付け（後処理・統合）をするには、**WD14 Taggerの出力結果と他の手法（顔認識・画像特徴量抽出やLLM）を組み合わせるパイプライン**を構築するのが一般的かつ最も効果的です。
+
+主な解決策（アプローチ）を3つ提案します。
+
+---
+
+### アプローチ1: DeepFace / InsightFace による「顔特徴量クラスタリング」の連携（自動化・推奨）
+
+WD14 Taggerで抽出した属性（`1girl`, `long hair` など）と、顔認識ライブラリによる同一人物判定（顔特徴量クラスタリング）を組み合わせる方法です。
+
+1. **顔検出と切り出し**: `InsightFace` や `anime-face-detector` を用いて全画像から「アニメ顔」領域を検出して切り出します。
+2. **特徴量ベクトル抽出とクラスタリング**: 切り出した顔画像の特徴量を置き換え、DBSCANやk-meansなどのクラスタリング手法で「同じ顔のグループ（グループA, B, C）」に分類します。
+3. **ルール定義とタグ置換**:
+* グループA（＝男性）→ WD14 Taggerの出力タグ群に `character_A` または `1boy` 等の固有タグを追加。
+* グループB（＝長髪女性）→ タグに `character_B` を追加。
+* グループC（＝セミロング女性）→ タグに `character_C` を追加。
+
+
+
+> **メリット:** Pythonスクリプトで全自動処理が可能。大量のコマ・画像を一括処理する際に非常に強力です。
+
+---
+
+### アプローチ2: マルチモーダルLLM（GPT-4o, Claude 3.5 Sonnet 等）による文脈解析
+
+WD14 Taggerのタグ出力と画像をあわせて、画像認識能力を持つLLM（マルチモーダルモデル）に入力し、複数枚の文脈を考慮してタグを修正・補正させる手法です。
+
+* **プロンプト例**:
+> 「提供された複数のマンガ画像と、それぞれのWD14 Tagger出力タグです。
+> 全体を通じて、登場人物を以下のように定義して区別してください。
+> * 男性: `character_A`
+> * 長髪の女性: `character_B`
+> * セミロングの女性: `character_C`
+> 各画像に対して、誰が映っているかを判定し、既存のWD14タグの先頭に `character_A`, `character_B`, `character_C` を付与したDanbooru形式の最終タグテキストを出力してください。」
+> 
+> 
+
+
+
+> **メリット:** マンガの構図のブレや横顔・後頭部など、顔検出ライブラリが不発になりやすいコマでも文脈（ストーリーの流れ）から人物を推測して精度高くラベル付けできます。
+
+---
+
+### アプローチ3: 属性タグ（髪型・性別）に基づいたルールベースフィルタリング（簡易的）
+
+WD14 Taggerが元々出力するDanbooruタグ（髪型や性別のタグ）の組み合わせを利用して、ルールでラベルを書き換える軽量なアプローチです。
+
+* **ルール判定の例**:
+* Tagに `1boy` または `man` が含まれる → `character_A` タグを追加
+* Tagに `1girl` かつ `long hair` や `very long hair` が含まれる → `character_B` タグを追加
+* Tagに `1girl` かつ `medium hair` や `shoulder-length hair` が含まれる → `character_C` タグを追加
+
+
+
+> **注意点:** 画面内に「長髪女性とセミロング女性が2人同時に映っているコマ（`2girls`）」の場合、この簡易ルールのみだと判別が難しいため、**「画面内の検出枠（Bounding Box）ごとのWD14タグ解析」**（Person/CropごとにWD14をかける）と組み合わせる必要があります。
+
+---
+
+### おすすめの実装構成（パイプライン）
+
+実際の画像生成系LoRA学習（Kohya_ssやDataset Tag Editor等）の前処理としては、以下の流れが最もスムーズです。
+
+```text
+[複数画像入力] 
+   │
+   ├──> 1. WD14 Tagger（各画像の全体タグを取得）
+   │
+   ├──> 2. InsightFace / YOLOv8（人物・顔領域を検出＆クロップ）
+   │       └── クロップ画像に対してWD14 Tagger ＆ 特徴量クラスタリングを実施
+   │
+   └──> 3. タグの統合処理スクリプト（Python）
+           ├── クラスタIDに基づき「character_A / B / C」の固有タグを追加
+           └── 不要・矛盾する汎用タグ（単なる `1girl` や不正確な髪型タグ）を整理
+
+```
+
+既存のツールの中では、**TagGUI** や **Dataset Tag Editor** などのGUIツールでWD14 Taggerを実行した後、Pythonのバッチ処理スクリプトを書いてタグテキスト（`.txt`）を一括置換・付与する方法がよく使われます。
+  
+---
+
+マンガの場合、ひとつの話、ひとつのチャプター毎に主要登場人物が30人いたとしても、単体の話、チャプターの話では2-3名しか出てきません。
+この場合、あらかじめこの話、このチャプターには、キャラクターA1、キャラクターA3、キャラクターB2として、限定した方が各画像ファイル毎の解析制度が上昇すると考えます。
+現在、下記のようなpythonスクリプトと設定ファイルで所定ディレクトリに出力されたタグのテキストファイルを一括変換しています。
+これを話数毎、つまりサブディレクトリ事にキャラクターを指定できる形に改修することはできますか
+
+[pythonスクリプト]
+----
+#!/usr/bin/env python3
+
+import argparse
+from pathlib import Path
+import sys
+
+try:
+    import yaml
+except ImportError:
+    print("PyYAML is required. Install it with: pip install pyyaml", file=sys.stderr)
+    sys.exit(1)
+
+
+def load_config(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    if not isinstance(config, dict):
+        raise ValueError("YAML configuration file must contain a mapping at the top level.")
+    return config
+
+
+def resolve_input_directory(config: dict) -> Path:
+    if "input_directory" in config:
+        return Path(config["input_directory"])
+    raise KeyError("YAML configuration must include 'input_directory'")
+
+
+def resolve_output_directory(config: dict) -> Path:
+    if "output_directory" in config:
+        return Path(config["output_directory"])
+    raise KeyError("YAML configuration must include 'output_directory'")
+
+
+def resolve_output_file(config: dict) -> Path:
+    if "output_file" in config:
+        return Path(config["output_file"])
+    raise KeyError("YAML configuration must include 'output_file'")
+
+
+def resolve_replaced_strings(config: dict) -> dict[str, str]:
+    replaced = {}
+    if "replaced_string" in config:
+        for item in config["replaced_string"]:
+            if isinstance(item, dict) and len(item) == 1:
+                key, value = next(iter(item.items()))
+                replaced[key] = value
+    return replaced
+
+
+def resolve_deleted_strings(config: dict) -> set[str]:
+    deleted = set()
+    if "deleted_string" in config:
+        for item in config["deleted_string"]:
+            if isinstance(item, str):
+                deleted.add(item)
+    return deleted
+
+
+def resolve_scan_subdir(config: dict) -> bool:
+    return config.get("scan_subdir", False)
+
+
+def gather_text_files(directory: Path, scan_subdir: bool) -> list[Path]:
+    if not directory.exists() or not directory.is_dir():
+        raise FileNotFoundError(f"Directory not found: {directory}")
+    files = []
+    if scan_subdir:
+        for entry in directory.rglob("*"):
+            if entry.is_file():
+                files.append(entry)
+    else:
+        for entry in sorted(directory.iterdir()):
+            if entry.is_file():
+                files.append(entry)
+    return sorted(files)
+
+
+def process_file(file_path: Path, deleted: set[str], replaced: dict[str, str]) -> list[str]:
+    strings = []
+    with file_path.open("r", encoding="utf-8", errors="replace") as f:
+        for line in f:
+            fields = line.rstrip("\n").split(",")
+            for field in fields:
+                text = field.strip()
+                if text:  # 空文字列は無視？
+                    strings.append(text)
+    # 削除
+    strings = [s for s in strings if s not in deleted]
+    # 置換
+    processed = []
+    for s in strings:
+        if s in replaced:
+            replacement = replaced[s]
+            if replacement:  # 空でない場合
+                processed.append(replacement)
+            # 空の場合は追加しない
+        else:
+            processed.append(s)
+    return processed
+
+
+def write_output_line(output_path: Path, file_path_str: str, strings: list[str]) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    line = f"/* {file_path_str} */ " + ", ".join(strings)
+    with output_path.open("a", encoding="utf-8") as f:  # append
+        f.write(line + "\n")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Convert prompts in text files based on YAML config."
+    )
+    parser.add_argument(
+        "config",
+        help="Path to the YAML configuration file.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    config_path = Path(args.config)
+
+    try:
+        config = load_config(config_path)
+        input_dir = resolve_input_directory(config)
+        output_dir = resolve_output_directory(config)
+        output_file = resolve_output_file(config)
+        replaced = resolve_replaced_strings(config)
+        deleted = resolve_deleted_strings(config)
+        scan_subdir = resolve_scan_subdir(config)
+        files = gather_text_files(input_dir, scan_subdir)
+
+        # 出力ディレクトリを作成
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # output_file の親ディレクトリを作成
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        # output_file をクリア
+        with output_file.open("w", encoding="utf-8") as f:
+            pass  # 空にする
+
+        for file_path in files:
+            relative_path = file_path.relative_to(input_dir)
+            processed = process_file(file_path, deleted, replaced)
+            # 個別出力
+            individual_output = output_dir / relative_path.parent / f"{relative_path.stem}_conv.txt"
+            write_output_line(individual_output, str(relative_path), processed)
+            # 全体出力
+            write_output_line(output_file, str(relative_path), processed)
+
+        print(f"Processed {len(files)} file(s). Outputs written to {output_dir} and {output_file}")
+        return 0
+    except Exception as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+----
+
+[設定ファイル]
+input_directory: /mnt/comfy_data/output/webtoon/outsiders/prompts
+output_directory: /mnt/comfy_data/output/webtoon/outsiders/converted_prompts_kaoru
+output_file: /mnt/comfy_data/output/webtoon/outsiders/Amagami/converted_prompts_kaoru.txt
+scan_subdir: true  # サブディレクトリも対象にする場合 true
+# replace strings
+replaced_string:
+  - 1boy: "1boy, Tachibana Junichi, Amagami"
+  - 2boys: "2boy, Tachibana Junichi, faceless_male, Amagami"
+  - 1girl: "1girl, Tanamachi Kaoru, Amagami"
+  - 2girls: "2girls, Tanamachi Kaoru, Tsukahara Hibiki, Amagami"
+  - 3girls: "3girls, Tanamachi Kaoru, Tsukahara Hibiki, Sakurai Rihoko, Amagami"
+  - 4girls: "4girls, Tanamachi Kaoru, Tsukahara Hibiki, Sakurai Rihoko, Tanaka Keiko, Amagami"
+  # outfit
+  - dress: school_uniform
+  - black_dress: school_uniform
+  - blle_dress: school_uniform
+  - red_dress: school_uniform
+  - short_dress: school_uniform
+  - jacket: school_uniform
+  - black_jacket: school_uniform
+  - blue_jacket: school_uniform
+  - brown_jacket: school_uniform
+  - green_jacket: school_uniform
+  - red_jacket: school_uniform
+  - black_jacket: school_uniform
+  - blue_jacket: school_uniform
+  - brown_jacket: school_uniform
+  - red_jacket: school_uniform
+  - green_jacket: school_uniform
+  - hoodie: school_uniform
+  - black_hoodie: school_uniform
+  - brown_hoodie: school_uniform
+  - grey_hoodie: school_uniform
+  - pink_hoodie: school_uniform
+  - purple_hoodie: school_uniform
+  - red_hoodie: school_uniform
+  - white_hoodie: school_uniform
+  - pants: school_uniform_skirt
+  - blue_pants: school_uniform_skirt
+  - jeans: school_uniform_shirt
+  - denim: school_uniform_shirt
+  - shirt: school_uniform_shirt
+  - black_shirt: school_uniform_shirt
+  - blue_shirt: school_uniform_shirt
+  - grey_shirt: school_uniform_shirt
+  - orange_shirt: school_uniform_shirt
+  - red_shirt: school_uniform_shirt
+  - yellow_shirt: school_uniform_shirt
+  - miniskirt: school_uniform_skirt
+  - black_skirt: school_uniform_skirt
+  - pencil_skirt: school_uniform_skirt
+  - white_skirt: school_uniform_skirt
+  - sweater: school_uniform
+  - black_sweater: school_uniform
+  - brown_sweater: school_uniform
+  - pink_sweater: school_uniform
+  - red_sweater: school_uniform
+  - short_shorts: white_panties
+  - sweat: perspiration
+# deleted strings
+deleted_string:
+  # outfits
+  # - sweat
+  - one-piece_swimsuit
+  # kouka
+  - aura
+  - cardboard_box
+  - dialogue_box
+  - heart
+
+-----
+
+このスクリプトは次の仕様上の不具合と改善点があります。改善点が実現できるように改修してください。
+
+[不具合]
+- L140-150: 削除し、置換した後に、格納する文字列リスト processed に、置換対象の文字列によっては、重複した文字列が複数回追加されることがある
+
+[改善点]
+- すでに、文字列リスト processed に登録されている文字列については、文字列リスト processed に追加しないようにする
+  
+

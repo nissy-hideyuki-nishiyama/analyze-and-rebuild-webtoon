@@ -2,5 +2,7 @@
 mode_name: "all-MiniLM-L6-v2"
 
 categories_dict_path: "./config/classify/categories.yaml"
-input_keyword_path: "./keywords/Read_I_Became_a_Pornhwa_NPC_strings_count_all_001.yaml"
-output_path: "./classify/classified_keywords_Read_I_Became_a_Pornhwa_NPC_002.json"
+# input_keyword_path: "./keywords/Read_I_Became_a_Pornhwa_NPC_strings_count_all_001.yaml"
+# output_path: "./classify/classified_keywords_Read_I_Became_a_Pornhwa_NPC_002.json"
+input_keyword_path: "/mnt/comfy_data/output/webtoon/Never_Just_Friends/prompts/Never_Just_Friends_strings_count_all_002.yaml"
+output_path: "/mnt/comfy_data/output/webtoon/Never_Just_Friends/prompts/classified_keywords_Never_Just_Friends_strings_count_all_002.json"

@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import yaml
 import argparse
+from collections import Counter
 
 def _extract_sort_key(filename):
     """ファイル名のソートキーを生成
@@ -67,7 +68,7 @@ def should_save_image(image_height, min_height):
     """
     return image_height >= min_height
 
-def process_images(directory_path, output_directory, separate_height, pattern_separate_height, extensions, tolerance=10, not_save_less_than_height=1):
+def process_images(directory_path, target_output_dir, output_directory, output_separate_height, pattern_separate_height, extensions, tolerance=10, not_save_less_than_height=1):
     """画像をグループ化して結合し、さらに分割して保存"""
     extensions = tuple(f'.{ext.lower()}' for ext in extensions)
     
@@ -83,13 +84,45 @@ def process_images(directory_path, output_directory, separate_height, pattern_se
     if not image_files:
         print("ディレクトリ内に画像ファイルが見つかりません。")
         return
+    
+    # 取得した画像ファイルについて、個々の画像サイズ(幅と高さ)を取得する
+    # 全ての画像ファイルについて、幅サイズ毎に集計し、一番多い幅サイズをコンソールに出力する
+    # 一番多い幅サイズをもつ画像ファイルが処理対象となり、それ以外の幅を持つ画像ファイルは処理対象外とするため、image_files リストから削除する
+    image_sizes = {}
+    valid_image_files = []
+    for filename in image_files:
+        filepath = os.path.join(directory_path, filename)
+        img_array = cv2.imread(filepath)
+        if img_array is None:
+            continue
+
+        height, width = img_array.shape[:2]
+        image_sizes[filename] = (width, height)
+        valid_image_files.append(filename)
+
+    if not valid_image_files:
+        print("読み込める画像ファイルがありません。")
+        return
+
+    width_counts = Counter(image_sizes[filename][0] for filename in valid_image_files)
+    most_common_width = width_counts.most_common(1)[0][0]
+    print(f"最多幅サイズ: {most_common_width}px ({width_counts[most_common_width]} 画像)")
+    image_files = [
+        filename
+        for filename in valid_image_files
+        if image_sizes[filename][0] == most_common_width
+    ]
 
     # 出力ディレクトリ作成
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory, exist_ok=True)
+    if not os.path.exists(target_output_dir):
+        os.makedirs(target_output_dir, exist_ok=True)
 
     # separated サブディレクトリ作成
-    separated_dir = os.path.join(output_directory, 'separated')
+    # separated_dir = os.path.join(target_output_dir, 'separated')
+    print(f"target_output_dir: {target_output_dir}")
+    print(f"output_directory: {output_directory}")
+    rel_path = os.path.relpath(target_output_dir, output_directory)
+    separated_dir = os.path.join(output_directory, 'separated', rel_path)
     if not os.path.exists(separated_dir):
         os.makedirs(separated_dir, exist_ok=True)
 
@@ -107,15 +140,15 @@ def process_images(directory_path, output_directory, separate_height, pattern_se
         group_images.append(img_array)
 
         # 下端が単色ならグループを保存
-        if is_uniform_color(img_array, separate_height, from_bottom=True):
+        if is_uniform_color(img_array, output_separate_height, from_bottom=True):
             if group_images:
                 merged_array = np.vstack(group_images)
-                output_path = os.path.join(output_directory, f"{file_counter:04d}.png")
+                output_path = os.path.join(target_output_dir, f"{file_counter:04d}.png")
                 saved = cv2.imwrite(output_path, merged_array)
                 if saved:
                     print(f"グループ {file_counter} を '{os.path.abspath(output_path)}' に保存しました。({len(group_images)} 画像)")
                     # 分割処理
-                    split_image(merged_array, separated_dir, file_counter, separate_height, pattern_separate_height, tolerance, not_save_less_than_height)
+                    split_image(merged_array, separated_dir, file_counter, output_separate_height, pattern_separate_height, tolerance, not_save_less_than_height)
                 else:
                     print(f"エラー: グループ {file_counter} の保存に失敗しました。")
                 group_images = []
@@ -124,12 +157,12 @@ def process_images(directory_path, output_directory, separate_height, pattern_se
     # 最後のグループを保存
     if group_images:
         merged_array = np.vstack(group_images)
-        output_path = os.path.join(output_directory, f"{file_counter:04d}.png")
+        output_path = os.path.join(target_output_dir, f"{file_counter:04d}.png")
         saved = cv2.imwrite(output_path, merged_array)
         if saved:
             print(f"グループ {file_counter} を '{os.path.abspath(output_path)}' に保存しました。({len(group_images)} 画像)")
             # 分割処理
-            split_image(merged_array, separated_dir, file_counter, separate_height, pattern_separate_height, tolerance, not_save_less_than_height)
+            split_image(merged_array, separated_dir, file_counter, output_separate_height, pattern_separate_height, tolerance, not_save_less_than_height)
         else:
             print(f"エラー: グループ {file_counter} の保存に失敗しました。")
 
@@ -268,11 +301,13 @@ def process_directory_tree(input_directory, output_directory, scan_subdir, separ
         rel_path = os.path.relpath(directory_path, input_directory)
         if rel_path in ('.', ''):
             target_output_dir = output_directory
+            # target_output_dir = os.path.join(output_directory, 'separated')
         else:
             target_output_dir = os.path.join(output_directory, rel_path)
+            # target_output_dir = os.path.join(output_directory, 'separated', rel_path)
 
         print(f"処理対象ディレクトリ: {directory_path}")
-        process_images(directory_path, target_output_dir, separate_height, pattern_separate_height, extensions, tolerance, not_save_less_than_height)
+        process_images(directory_path, target_output_dir, output_directory, separate_height, pattern_separate_height, extensions, tolerance, not_save_less_than_height)
 
 
 def main():
