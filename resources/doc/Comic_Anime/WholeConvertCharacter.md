@@ -97,7 +97,7 @@ python3 classify.py --config ./config/classify/classify_config.yaml
 ```bash
 cd utils
 # カテゴリ辞書チューニング用ファイルを出力する
-python3 keywords_to_yaml.py --config ./config/keywords_to_yaml_for_tunning_dict_config.yaml
+python3 keywords_to_yaml.py --config ./config/keywords_to_yaml_for_tuning_dict_config.yaml
 # キャラクタ変換用設定プロンプトの設定ファイルを作成する際に、資材とするファイルを出力する
 python3 keywords_to_yaml.py --config ./config/keywords_to_yaml_for_convert_config.yaml
 ```
@@ -111,7 +111,11 @@ python3 keywords_to_yaml.py --config ./config/keywords_to_yaml_for_convert_confi
 - 次回以降、キーワードの分類の精度が上がる
 
 ```bash
+cd utils
+# カテゴリー辞書のメンテナンス
 vim ./config/classify/categories.yaml
+# カテゴリ辞書を昇順に並べ替える
+python3 maintenance_categorys.py
 ```
 
 ### 9.2. 変換および削除候補のキーワードリストを作成する
@@ -158,7 +162,18 @@ replaced_string:
   - black_hoodie: r_clothes, blue jacket, long_sleeves, grey mini skirt, white socks, brown footwear
   - black_cardigan: r_clothes, blue jacket, long_sleeves
   - black_jacket: r_clothes, blue jacket, long_sleeves
-  # - black_pants: m_clothes, blazer, red neck ribbon
+  # - black_pants: m_clothes, blazer, red neck 
+
+# 生成した tag_categories.yaml のパス
+tag_categories_path: ./dict/tag_categories_01.yaml
+
+# 一括削除したいサブカテゴリーのリスト
+deleted_sub_categories:
+  - hair_color
+  # - hair_style
+  - eye_color
+  - facial_features
+
 # deleted strings
 deleted_string:
   # outfit
@@ -167,6 +182,8 @@ deleted_string:
   - brown_footwear
   - cuffs
   - gloves
+deleted_prefixes:
+deleted_suffixes:
 # 【話数別（サブディレクトリ別）オーバーライド設定】
 # ディレクトリパス内のサブディレクトリ名（例: ep01, chapter_02 など）に一致する設定が上書き・追加される
 chapters:
@@ -209,6 +226,15 @@ cd utils
 pytho3 convert_chapter_prompts.py config/replace/replace_targets_xxxxx.yaml
 ```
 
+### 12.3. (オプション) 変換用プロンプトのテキストファイルの修正
+
+- Anima では、'_'(アンダースコア)で結ばれた文字列は一応認識できるが、推奨は' '(スペース) で結んだ方がよい
+- これを満たすためにsedコマンドにて、一括置換を実施するため、下記のコマンドを実行する
+
+```bash
+cat /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001_out.txt | sed -E 's/(a-zA-Z)_(a-zA-Z)/\1 \2/g' > /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001_out.txt 
+```
+
 
 ## 13. (オプション)Anima向けに自然言語のプロンプトを生成する
 
@@ -216,8 +242,9 @@ pytho3 convert_chapter_prompts.py config/replace/replace_targets_xxxxx.yaml
 - Animaでは自然言語が利用できるので、これで画像全体の雰囲気やカメラアングル、位置関係など、danbooタグでは表現しづらいものを定義する
 ```bash
 cd utils
-# 自然言語プロンプトを画像ファイルと同じディレクトリに作成する
-python3 batch_caption_vl25_3b.py --image_dir /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02 --config ./config/batch_caption_natural_lang.yaml
+# 自然言語プロンプトを画像ファイルと同じディレクトリに作成する。下記のいずれかを実行する
+python3 batch_caption_vl25_3b.py --image_dir /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02 --config ./config/batch_captions/batch_caption_natural_lang.yaml
+python3 batch_caption_natural_lang_qw35_vl_4b_01.py --image_dir /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02 --config ./config//batch_captions/batch_caption_natural_lang.yaml
 
 # 各画像ディレクトリに作成されたタグファイルをプロンプトディレクトリにコピーし、元のプロンプトを削除する。入力ディレクトリに移動して、下記のコマンドを実行する
 cd /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02
@@ -232,3 +259,17 @@ find . -type f -name "*.txt" -exec sed -i '1,5d' {} \;
 
 ComfyUIで実施する
 bath_t2i_anima_ ワークフローを利用する
+
+### 13.1 Anima 向けベースプロンプトのテンプレート
+
+- Danbooru タグに対する推奨タグとNegativeタグを示す
+
+  - Positive Tags
+```Positive
+masterpiece, best quality, score_9, score_8, score_7, highres, official art, absurdres, very aesthetic, scenery, year 2025, newest, recent, explicit, @tanaka yuuichi
+```
+
+  - Negative Tags
+```Negative
+low quality, worst quality, score_1, 2, score_3, early, anime screenshot, year 1990, year 1980, old, safe, sensitive
+```
