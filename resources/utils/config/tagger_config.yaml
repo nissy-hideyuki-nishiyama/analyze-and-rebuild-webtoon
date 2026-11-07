@@ -1,0 +1,28 @@
+general:
+  onnx: true  # default: true
+  batch_size: 1 # default: 1
+  caption_extension: '.txt' # default: .txt
+  max_data_loader_n_workers: 1  # default:1
+  thresh: 0.35  # default: 0.35
+  general_threshold: 0.25  # default: 0.35
+  character_threshold: 0.85 # default:  0.35
+  recursive: true  # default: false
+  freequency_tags: true   # default: true
+  debug: false  # default: false
+user:
+  image_dir: '/mnt/comfy_data/output/webtoon/Never_Just_Friends'  # default: None
+  output_dir: '/mnt/comfy_data/output/webtoon/Never_Just_Friends/prompts' # default:  None
+model:
+  model_dir: '/mnt/ssd-data/common/comfy_data/models/wd14_tagger_models' # default: wd14_tagger_models
+  force_download: true  # default true
+tagg_edit:
+  remove_underscore: false  # default: false
+  undesired_tags: 'speech_bubble, thought_bubble, english_text, korean_text, thai_text, bangs, censor, blank_censor, light_censor, bar_censor, sound_effects, invisible_penis'  # defalt: None
+  use_rating_tags: false  # default: false
+  use_rating_tags_as_last_tag: false  # default: false
+  character_tags_first: true  # defalut: false
+  character_tag_expand: true  # default:  true
+  always_first_tags: 1boy,1girl,2boys,2girls,3boys,3girls,4girls   # default: None
+  caption_separator: ', '  # default: ', '
+  tag_replacement: ''   # default None
+

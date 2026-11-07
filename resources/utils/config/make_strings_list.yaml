@@ -3,10 +3,12 @@
 # directory: /mnt/comfy_data/output/webtoon/Teachers_Efforts/prompts
 # directory: /mnt/comfy_data/output/webtoon/Read_I_Became_a_Pornhwa_NPC/prompts
 # directory: /mnt/comfy_data/output/webtoon/Never_Just_Friends/prompts/original
-directory: /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/original
+# directory: /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/original
+directory: /mnt/comfy_data/output/webtoon/switch-on/prompts/original
 # output_file: /mnt/comfy_data/output/webtoon/outsiders/prompts/strings_count.yaml
 # output_file: /mnt/comfy_data/output/webtoon/Teachers_Efforts/prompts/Teachers_Efforts_strings_count_all_001.yaml
-output_file: /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/collapse_rewind_strings_count_all_001.yaml
+# output_file: /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/collapse_rewind_strings_count_all_001.yaml
+output_file: /mnt/comfy_data/output/webtoon/switch-on/prompts/switch-on_strings_count_all_001.yaml
 scan_subdir: true
 extensions:
   - txt

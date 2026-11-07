@@ -213,7 +213,7 @@ chapters:
 - 下記のコマンドを実行する
 ```bash
 cd utils
-pytho3 convert_prompts.py config/replace/replace_targets_xxxxx.yaml
+python3 convert_prompts.py config/replace/replace_targets_xxxxx.yaml
 ```
 
 ### 12.2. 話数毎のキャラクタ変換用プロンプトを生成する
@@ -223,7 +223,7 @@ pytho3 convert_prompts.py config/replace/replace_targets_xxxxx.yaml
 - 下記のコマンドを実行する
 ```bash
 cd utils
-pytho3 convert_chapter_prompts.py config/replace/replace_targets_xxxxx.yaml
+python3 convert_chapter_prompts.py config/replace/replace_targets_xxxxx.yaml
 ```
 
 ### 12.3. (オプション) 変換用プロンプトのテキストファイルの修正
@@ -232,7 +232,8 @@ pytho3 convert_chapter_prompts.py config/replace/replace_targets_xxxxx.yaml
 - これを満たすためにsedコマンドにて、一括置換を実施するため、下記のコマンドを実行する
 
 ```bash
-cat /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001_out.txt | sed -E 's/(a-zA-Z)_(a-zA-Z)/\1 \2/g' > /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001_out.txt 
+mv /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001.txt /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001_org.txt
+cat /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001_org.txt | perl -pe 's/(?<!\d)_(?!\d)/ /g' > /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001.txt 
 ```
 
 
@@ -243,8 +244,8 @@ cat /mnt/comfy_data/output/webtoon/collapse_rewind/prompts/converted_prompts_001
 ```bash
 cd utils
 # 自然言語プロンプトを画像ファイルと同じディレクトリに作成する。下記のいずれかを実行する
-python3 batch_caption_vl25_3b.py --image_dir /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02 --config ./config/batch_captions/batch_caption_natural_lang.yaml
-python3 batch_caption_natural_lang_qw35_vl_4b_01.py --image_dir /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02 --config ./config//batch_captions/batch_caption_natural_lang.yaml
+python3 batch_caption_vl25_3b.py --image_dir /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02 --config ./config/batch_captions/batch_caption_natural_lang_05.yaml
+python3 batch_caption_natural_lang_qw35_vl_4b_01.py --image_dir /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02 --config ./config//batch_captions/batch_caption_natural_lang_05.yaml
 
 # 各画像ディレクトリに作成されたタグファイルをプロンプトディレクトリにコピーし、元のプロンプトを削除する。入力ディレクトリに移動して、下記のコマンドを実行する
 cd /mnt/comfy_data/output/webtoon/Never_Just_Friends/separated_nsw02

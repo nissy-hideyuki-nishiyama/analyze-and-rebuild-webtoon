@@ -157,6 +157,11 @@ def get_rules_for_file(
     merged_prefixes = set(base_prefixes)
     merged_suffixes = set(base_suffixes)
     merged_replaced = dict(base_replaced)
+    
+    # ベースのサブカテゴリ由来のタグを追加
+    for cat_name in base_sub_cats:
+        if cat_name in tag_categories:
+            merged_deleted.update(tag_categories[cat_name])
 
     path_parts = relative_path.parts[:-1]  # ファイル名を除いたパス要素
 
@@ -226,7 +231,7 @@ def write_output_line(output_path: Path, file_path_str: str, strings: list[str])
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Convert prompts in text files based on YAML config with sub-directory overrides."
+        description="Convert prompts in text files based on YAML config with sub-directory overrides and tag categories."
     )
     parser.add_argument(
         "config",

@@ -363,6 +363,7 @@ expression:   # 表情
   - nervous
   - one_eye_closed
   - open_mouth
+  - restrained
   - rolling_eyes
   - sad
   - saliva
@@ -633,6 +634,7 @@ underwear:  # 下着。キャラクタ変換時に置換または削除候補と
   - black_pantyhose
   - blue_bra
   - blue_panties
+  - bondage
   - bra
   - brown_panties
   - fishnet_pantyhose

@@ -24,6 +24,7 @@ resources/utils/keywords/*.yaml
 resources/utils/output/*
 
 # sd-scripts
+sd-scripts
 sd-scripts/*
 sd-scripts/.venv
 sd-scripts/.venv/*
